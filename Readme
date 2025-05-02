@@ -1,0 +1,3 @@
+python script.py --tag-key category --tag-value Novel --metadata-key author --metadata-value "J.K. Rowling"
+
+python script.py --tags category=Novel,Essay status=Published,Draft --metadata author="J.K. Rowling,Isaac Asimov" language=English,French

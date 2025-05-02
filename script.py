@@ -2,6 +2,8 @@ import boto3
 from botocore.exceptions import ClientError
 import random
 import string
+import argparse
+
 
 s3 = boto3.client('s3')
 
@@ -105,4 +107,75 @@ def upload_to_s3():
         
     print(f"Successfully uploaded {num_objects} objects to the bucket '{bucket_name}'.")
 
-create_bucket(bucket_name, 'ap-south-1')
+def parse_multi_value_filters(pairs_list):
+    filters = {}
+    if pairs_list:
+        for item in pairs_list:
+            if '=' in item:
+                key, values = item.split('=', 1)
+                filters[key.strip()] = set(v.strip() for v in values.split(','))
+    return filters
+
+def delete_objects_by_condition(tag_filters, metadata_filters):
+    paginator = s3.get_paginator('list_objects_v2')
+    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
+
+    print(f"Searching for objects matching tags {tag_filters} and metadata {metadata_filters}...")
+
+    deleted_count = 0
+    for page in page_iterator:
+        if 'Contents' not in page:
+            continue
+
+        for obj in page['Contents']:
+            key = obj['Key']
+
+            try:
+                tag_response = s3.get_object_tagging(Bucket=bucket_name, Key=key)
+                tags = {tag['Key']: tag['Value'] for tag in tag_response['TagSet']}
+            except ClientError as e:
+                print(f"Error retrieving tags for {key}: {e}")
+                continue
+
+            try:
+                head = s3.head_object(Bucket=bucket_name, Key=key)
+                metadata = head['Metadata']
+            except ClientError as e:
+                print(f"Error retrieving metadata for {key}: {e}")
+                continue
+
+            # Match each tag key and value
+            tag_match = all(
+                key in tags and tags[key] in values
+                for key, values in tag_filters.items()
+            )
+
+            # Match each metadata key and value
+            metadata_match = all(
+                key in metadata and metadata[key] in values
+                for key, values in metadata_filters.items()
+            )
+
+            if tag_match and metadata_match:
+                print(f"Deleting object: {key}")
+                s3.delete_object(Bucket=bucket_name, Key=key)
+                deleted_count += 1
+
+    print(f"Deleted {deleted_count} matching objects.")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Delete S3 objects based on tags and metadata with multiple values.")
+    parser.add_argument('--tags', nargs='*', help='Tag filters: key=val1,val2')
+    parser.add_argument('--metadata', nargs='*', help='Metadata filters: key=val1,val2')
+
+    args = parser.parse_args()
+
+    tag_filters = parse_multi_value_filters(args.tags)
+    metadata_filters = parse_multi_value_filters(args.metadata)
+
+    create_bucket(bucket_name, 'ap-south-1')
+    delete_objects_by_condition(tag_filters, metadata_filters)
+
+
+
+
