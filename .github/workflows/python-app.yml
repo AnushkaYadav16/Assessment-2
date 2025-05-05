@@ -32,6 +32,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          python your_script.py --bucket example-bucket-name \
+          python script.py --bucket example-bucket-name \
                                  --tags "category=Novel,Essay" \
                                  --metadata "author=J.K. Rowling"
