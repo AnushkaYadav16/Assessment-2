@@ -36,4 +36,4 @@ jobs:
 
       - name: Run script
         run: |
-          python script.py --bucket example-bucket-name
+          python script.py --bucket objectswithtagsandmetadata --tags category=Novel,Essay status=Published,Draft --metadata author="J.K. Rowling,Isaac Asimov" language=English,French
