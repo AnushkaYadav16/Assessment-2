@@ -4,19 +4,14 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  
+  workflow_dispatch:
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
 
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ap-south-1
-
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -28,13 +23,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install boto3
-          
-      - name: Verify AWS credentials
-        run: |
-          aws sts get-caller-identity
 
-      - name: Run S3 script (dry-run example)
+      - name: Set AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Verify AWS Identity
+        run: aws sts get-caller-identity
+
+      - name: Run script
         run: |
-          python script.py --bucket example-bucket-name \
-                                 --tags "category=Novel,Essay" \
-                                 --metadata "author=J.K. Rowling"
+          python script.py --bucket example-bucket-name
