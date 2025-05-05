@@ -1,3 +1,24 @@
-python script.py --tag-key category --tag-value Novel --metadata-key author --metadata-value "J.K. Rowling"
+script.py
+1. First the script checks if the specified s3 bucket is present, it deletes everything inside it.
+2. If s3 bucket is not present it creates one.
+3. Creates random objects and uploads them to the bucket.
+4. Each object gets random metadata and tags.
+5. Based on the given tags and metadata, it deletes the objects that matches the filters provided. 
 
-python script.py --tags category=Novel,Essay status=Published,Draft --metadata author="J.K. Rowling,Isaac Asimov" language=English,French
+
+Tags Used :-
+    categories = ["Novel", "Research Paper", "Short Story", "Essay", "Anthology"]
+    status = ["Published", "Draft", "Under Review", "Archived"]
+    regions = ["US", "Europe", "Asia", "Africa", "Australia"]
+    levels = ["Public", "Private", "Restricted"]
+    projects = ["Project_A", "Project_B", "Project_C", "Project_D"]
+
+Metadata Used :-
+    authors = ["J.K. Rowling", "George Orwell", "Isaac Asimov", "Margaret Atwood", "William Shakespeare"]
+    genres = ["Fantasy", "Science Fiction", "Biography", "Historical Fiction", "Romance"]
+    editions = ["First Edition", "Revised Edition", "Digital Edition", "Special Edition", "Paperback Edition"]
+    year = str(random.randint(1990, 2023))
+    lang = ["English", "Spanish", "French", "German", "Italian"]
+    rate = str(round(random.uniform(1, 5), 1))  
+
+python script.py --bucket objectswithtagsandmetadata --tags category=Novel,Essay status=Published,Draft --metadata author="J.K. Rowling,Isaac Asimov" language=English,French
