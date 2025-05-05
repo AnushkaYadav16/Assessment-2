@@ -9,8 +9,7 @@ s3 = boto3.client('s3')
 
 bucket_name = None
 # num_objects = 100
-num_objects = random.randint(200,250)
-prefix = 'sample-data/'
+num_objects = random.randint(2000,2500)
 
 def create_bucket(bucket_name, region):
     """Creates an S3 bucket if it doesn't already exist."""
