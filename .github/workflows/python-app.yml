@@ -4,14 +4,16 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Allows manual triggering from GitHub UI
+  workflow_dispatch:  
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
 
     env:
-      AWS_REGION: ap-south-1
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ap-south-1
 
     steps:
       - name: Checkout repository
@@ -28,9 +30,6 @@ jobs:
           pip install boto3
 
       - name: Run S3 script (dry-run example)
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           python script.py --bucket example-bucket-name \
                                  --tags "category=Novel,Essay" \
