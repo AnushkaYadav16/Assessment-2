@@ -152,13 +152,11 @@ def delete_objects_by_condition(tag_filters, metadata_filters):
                 print(f"Error retrieving metadata for {key}: {e}")
                 continue
 
-            # Match each tag key and value
             tag_match = all(
                 key in tags and tags[key] in values
                 for key, values in tag_filters.items()
             )
 
-            # Match each metadata key and value
             metadata_match = all(
                 key in metadata and metadata[key] in values
                 for key, values in metadata_filters.items()

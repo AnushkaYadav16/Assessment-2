@@ -9,7 +9,6 @@ class TestS3Operations(unittest.TestCase):
     @patch('script.delete_objects_from_bucket')
     @patch('script.s3')
     def test_create_bucket_exists(self, mock_s3, mock_delete_objects, mock_upload):
-        # Simulate bucket exists
         mock_s3.head_bucket.return_value = {}
 
         script.create_bucket('test-bucket', 'ap-south-1')
@@ -21,7 +20,6 @@ class TestS3Operations(unittest.TestCase):
     @patch('script.upload_to_s3')
     @patch('script.s3')
     def test_create_bucket_does_not_exist(self, mock_s3, mock_upload):
-        # Simulate 404 error (bucket not found)
         error_response = {'Error': {'Code': '404'}}
         mock_s3.head_bucket.side_effect = ClientError(error_response, 'head_bucket')
 
@@ -41,7 +39,6 @@ class TestS3Operations(unittest.TestCase):
 
         script.delete_objects_from_bucket()
 
-        # Check if delete_object was called for both objects
         self.assertEqual(mock_s3.delete_object.call_count, 2)
 
     def test_parse_multi_value_filters(self):
@@ -56,17 +53,15 @@ class TestS3Operations(unittest.TestCase):
 
     @patch('script.s3')
     def test_delete_objects_by_condition(self, mock_s3):
-        # Setup mock paginator
         mock_paginator = MagicMock()
         mock_page_iterator = [
             {
-                'Contents': [{'Key': 'object_1.txt'}, {'Key': 'object_2.txt'}]  # Updated to direct objects
+                'Contents': [{'Key': 'object_1.txt'}, {'Key': 'object_2.txt'}]  
             }
         ]
         mock_paginator.paginate.return_value = mock_page_iterator
         mock_s3.get_paginator.return_value = mock_paginator
 
-        # Mock tag and metadata matches only for one object
         mock_s3.get_object_tagging.side_effect = [
             {'TagSet': [{'Key': 'region', 'Value': 'Europe'}]},
             {'TagSet': [{'Key': 'region', 'Value': 'US'}]}
@@ -81,9 +76,8 @@ class TestS3Operations(unittest.TestCase):
 
         script.delete_objects_by_condition(tag_filters, metadata_filters)
 
-        # Should only delete the first object (object_1.txt)
         mock_s3.delete_object.assert_called_once_with(
-            Bucket=script.bucket_name, Key='object_1.txt'  # Updated to direct object
+            Bucket=script.bucket_name, Key='object_1.txt'  
         )
 
 
