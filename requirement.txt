@@ -1,5 +1,5 @@
 boto3==1.26.10
-botocore==1.29.10
+botocore==1.37.37
 unittest2==1.1.0
 mock==5.0.0  
 moto==4.0.0  
