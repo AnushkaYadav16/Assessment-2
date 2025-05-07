@@ -6,6 +6,7 @@ on:
       - '**'            
   pull_request:          
   workflow_dispatch:     
+  
 
 jobs:
   test:
@@ -60,6 +61,6 @@ jobs:
       - name: Verify AWS Identity
         run: aws sts get-caller-identity
 
-      - name: Run script
+      - name: Run deployment script
         run: |
           python script.py --bucket objectswithtagsandmetadata --tags category=Novel,Essay status=Published,Draft --metadata author="J.K. Rowling,Isaac Asimov" language=English,French
